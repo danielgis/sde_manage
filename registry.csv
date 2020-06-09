@@ -1,0 +1,5 @@
+datetime,message,state
+2020-06-08 19:40:10.123000,El archivo de registro se creo satisfactoriamente,1
+2020-06-08 19:40:10.142000,Inicio de mantenimiento de Geodatabase,1
+2020-06-08 19:40:32.375000,Finalizo el mantenimiento de Geodatabase,1
+2020-06-08 19:40:32.381000,Proceso ejecutado satisfactoriamente,1
