@@ -12,6 +12,7 @@ def manage_geodatabase_tool():
 
     params = dict()
     params[CONN] = get_parameter(CONN)[0][0]
+    params[CONN_SDE] = get_parameter(CONN_SDE)[0][0]
     params[USERNAME] = get_parameter(USERNAME)[0][0]
     params[INCLUDE_SYSTEM] = get_parameter(INCLUDE_SYSTEM)[0][0]
     params[DELTA_ONLY] = get_parameter(DELTA_ONLY)[0][0]
@@ -24,8 +25,16 @@ def manage_geodatabase_tool():
         raise RuntimeError('%s (line %s)' % (ERR_CONNGDB, cf.f_lineno))
 
     # Valida existencia de archivo de conexion a la gdb
-    if not arcpy.Exists(params['conn']):
+    if not arcpy.Exists(params[CONN]):
         raise RuntimeError('%s (line %s)' % (ERR_CONNGDB_PATH, cf.f_lineno))
+
+    # Valida configuracion
+    if not params[CONN_SDE]:
+        raise RuntimeError('%s (line %s)' % (ERR_CONNGDB_SDE, cf.f_lineno))
+
+    # Valida existencia de archivo de conexion SDE a la gdb
+    if not arcpy.Exists(params[CONN_SDE]):
+        raise RuntimeError('%s (line %s)' % (ERR_CONNGDB_PATH_SDE, cf.f_lineno))
 
     if not params[USERNAME]:
         raise RuntimeError('%s (line %s)' % (ERR_USERNAME, cf.f_lineno))

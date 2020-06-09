@@ -63,6 +63,7 @@ class ManageGeoDatabase(object):
     def __init__(self, **kwargs):
         self.datalist = list()
         self.conn = kwargs.get(CONN)
+        self.conn_sde = kwargs.get(CONN_SDE)
         self.username = kwargs.get(USERNAME)
 
         # Reconstruccion de indices
@@ -90,7 +91,7 @@ class ManageGeoDatabase(object):
         arcpy.AddMessage(MSG_ACCEPT_CONECTION_FALSE)
         arcpy.AcceptConnections(self.conn, False)
         arcpy.AddMessage(MSG_DISCONNECT_USERS)
-        arcpy.DisconnectUser(self.conn, 'ALL')
+        arcpy.DisconnectUser(self.conn_sde, 'ALL')
 
     def compress(self):
         arcpy.AddMessage(MSG_COMPRESS)
