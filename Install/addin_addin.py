@@ -1,5 +1,3 @@
-import threading
-
 import arcpy
 import pythonaddins
 from datetime import datetime
@@ -7,9 +5,7 @@ import os
 
 MSG_MESSAGE_BOX = 'Esta seguro que desea ejecutar el proceso de mantenimiento de la Geodatabase'
 MSG_MESSAGE_BOX_CONCILE = 'Recuerde realizar la conciliacion de versiones antes de ejecutar este proceso.'
-MSG_LOG_NOT_EXIST = 'El archivo de registro aun no existe'
 TITLE_MESSAGE_BOX = 'SDEManager {}'.format(datetime.now().year)
-LOG_FILE = r'C:\sde_addin_manage\registry.csv'
 
 TBX = os.path.join(os.path.dirname(__file__), 'Toolbox.tbx')
 arcpy.ImportToolbox(TBX)
@@ -62,10 +58,6 @@ class GetConfig(object):
         arcpy.getconfiguracion()
 
 
-def OpenRegistry():
-    os.startfile(LOG_FILE)
-
-
 class GetRegistry(object):
     """Implementation for addin_addin.get_registry (Button)"""
 
@@ -74,9 +66,4 @@ class GetRegistry(object):
         self.checked = False
 
     def onClick(self):
-        if os.path.exists(LOG_FILE):
-            t = threading.Thread(target=OpenRegistry)
-            t.start()
-            t.join()
-        else:
-            pythonaddins.MessageBox(MSG_LOG_NOT_EXIST, TITLE_MESSAGE_BOX)
+        arcpy.openregistry()
