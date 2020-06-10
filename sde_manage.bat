@@ -1,1 +1,1 @@
-C:\Python27\ArcGIS10.4\python.exe "C:\sde_addin_manage\Install\tbx_manageodb.py"
+C:\sde_addin_manage\Install\tbx_manageodb.py

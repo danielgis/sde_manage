@@ -57,7 +57,6 @@ def manage_geodatabase_tool():
 
 if __name__ == '__main__':
     response = manage_geodatabase_tool()
-    arcpy.AddMessage(response[1:])
     execute = sys.executable
     if sys.executable.endswith('ArcMap.exe'):
         import pythonaddins

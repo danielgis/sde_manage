@@ -98,22 +98,36 @@ class ManageGeoDatabase(object):
         arcpy.env.workspace = ""
         arcpy.ClearWorkspaceCache_management(self.conn)
         arcpy.Compress_management(self.conn)
+        print arcpy.GetMessages()
 
     def get_data_processing(self):
         arcpy.AddMessage(MSG_GET_DATA_PROCESSING)
         arcpy.env.workspace = self.conn
+        fcs = arcpy.ListFeatureClasses()
+        fts = arcpy.ListTables()
+        frs = arcpy.ListRasters()
+
+        data_list = fcs + fts + frs
+
         walk = map(lambda i: i[1], arcpy.da.Walk(self.conn, datatype="FeatureDataset"))
         dataset_list = walk[0]
-        data_list = arcpy.ListTables() + arcpy.ListFeatureClasses() + arcpy.ListRasters() + dataset_list
-        # self.datalist = filter(lambda i: self.username in i.lower(), data_list)
-        self.datalist = data_list
+
+        for ds in dataset_list:
+            ws = os.path.join(self.conn, ds)
+            arcpy.env.workspace = ws
+            for fc in arcpy.ListFeatureClasses():
+                data_list.append(os.path.join(ws, fc))
+
+        self.datalist = filter(lambda i: self.username.lower() in i.lower(), data_list)
+        arcpy.AddMessage(MSG_DATA_LIST.format(len(self.datalist)))
 
     def rebuild_index(self):
-        arcpy.AddMessage(MSG_REBUILD_INDEX)
         system = 'SYSTEM' if self.include_system else 'NO_SYSTEM'
         deltas = 'ONLY_DELTAS' if self.delta_only else 'ALL'
         self.get_data_processing()
+        arcpy.AddMessage(MSG_REBUILD_INDEX)
         arcpy.RebuildIndexes_management(self.conn, system, self.datalist, deltas)
+        print arcpy.GetMessages()
 
     def analyst_dataset(self):
         arcpy.AddMessage(MSG_ANALIZE_DATASET)
@@ -122,6 +136,7 @@ class ManageGeoDatabase(object):
         deltas = 'ANALYZE_DELTA' if self.analyze_delta else 'NO_ANALYZE_DELTA '
         archive = 'ANALYZE_ARCHIVE' if self.analyze_archive else 'NO_ANALYZE_ARCHIVE '
         arcpy.AnalyzeDatasets_management(self.conn, system, self.datalist, base, deltas, archive)
+        print arcpy.GetMessages()
 
     def postprocess(self):
         arcpy.AddMessage(MSG_ACCEPT_CONECTION_TRUE)
