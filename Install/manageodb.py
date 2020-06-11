@@ -116,9 +116,18 @@ class ManageGeoDatabase(object):
             ws = os.path.join(self.conn, ds)
             arcpy.env.workspace = ws
             for fc in arcpy.ListFeatureClasses():
-                data_list.append(os.path.join(ws, fc))
+                data_list.append(os.path.join(ds, fc))
 
-        self.datalist = filter(lambda i: self.username.lower() in i.lower(), data_list)
+        data_list = filter(lambda i: self.username.lower() in i.lower(), data_list)
+
+        for ot in OMITED_TABLES:
+            for i, m in enumerate(data_list):
+                if ot.lower() in m.lower():
+                    del data_list[i]
+                    break
+
+        self.datalist = list(set(data_list))
+
         arcpy.AddMessage(MSG_DATA_LIST.format(len(self.datalist)))
 
     def rebuild_index(self):
@@ -135,7 +144,7 @@ class ManageGeoDatabase(object):
         base = 'ANALYZE_BASE' if self.analyze_base else 'NO_ANALYZE_BASE'
         deltas = 'ANALYZE_DELTA' if self.analyze_delta else 'NO_ANALYZE_DELTA '
         archive = 'ANALYZE_ARCHIVE' if self.analyze_archive else 'NO_ANALYZE_ARCHIVE '
-        arcpy.AnalyzeDatasets_management(self.conn, system, self.datalist, base, deltas, archive)
+        arcpy.AnalyzeDatasets_management(self.conn, system, '#', base, deltas, archive)
         print arcpy.GetMessages()
 
     def postprocess(self):

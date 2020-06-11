@@ -12,3 +12,9 @@ DELTA_ONLY = 'delta_only'
 ANALYZE_BASE = 'analyze_base'
 ANALYZE_DELTA = 'analyze_delta'
 ANALYZE_ARCHIVE = 'analyze_archive'
+
+
+OMITED_TABLES = ['calidda.caliddagis.vw_mtclientes_estadostipoinfo',
+                 'calidda.caliddagis.vwg_consulta_proyectos',
+                 'calidda.caliddagis.perfiles_herramientas_desktop',
+                 'ia_bomberos']
