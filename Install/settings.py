@@ -3,7 +3,8 @@ import os
 BASE_DIR = os.path.dirname(__file__)  # Directorio base dell proyecto
 BASE_DIR_C = r'C:\sde_addin_manage'
 CONN_SQLITE = os.path.join(BASE_DIR_C, 'manageodb.db')  # Conexion a base de datos sqlite
-LOG_FILE = os.path.join(BASE_DIR_C, 'registry.csv')
+# LOG_FILE = os.path.join(BASE_DIR_C, 'registry.txt')
+REGISTRY_DIR = os.path.join(BASE_DIR_C, 'registro')
 CONN = 'conn'
 CONN_SDE = 'conn_sde'
 USERNAME = 'username'

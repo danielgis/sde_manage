@@ -1,13 +1,14 @@
 import sqlite3
-# from settings import *
+from settings import *
 from messages import *
-from manageodb import *
+# from manageodb import *
+from registro import *
 
 registry = LogRegistry()
-registry.create_file_log()
+# registry.create_file_log()
 
 if not os.path.exists(CONN_SQLITE):
-    registry.add_registry([0, ERR_CONN_SQLITE])
+    registry.data.append([0, ERR_CONN_SQLITE])
     raise RuntimeError(ERR_CONN_SQLITE)
 
 conn = sqlite3.Connection(CONN_SQLITE, isolation_level=None, check_same_thread=False)

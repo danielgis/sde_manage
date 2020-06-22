@@ -12,10 +12,10 @@
         <Toolbar caption="SDEManager" category="ManageSDE" id="addin_addin.toolbar" showInitially="true">
             <Items>
                 <Button refID="addin_addin.execute_process" />
-                <Button refID="addin_addin.config_tool" />
+<!--                <Button refID="addin_addin.config_tool" />-->
                 <Button refID="addin_addin.get_config" />
                 <Button refID="addin_addin.get_registry" />
-                <Button refID="addin_addin.user_guide" />
+<!--                <Button refID="addin_addin.user_guide" />-->
             </Items>
         </Toolbar>
     </Toolbars>

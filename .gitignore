@@ -6,3 +6,7 @@ __pycache__/
 __pycache__/
 *.sde
 registry.csv
+json_to_geojson.py
+
+registro
+clean_gp_registry.py

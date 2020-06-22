@@ -4,12 +4,14 @@ from settings import *
 from messages import *
 from datetime import datetime
 import pandas as pd
+from packages import *
 
 
 def scripttool_decore(func):
     def decorator(*args, **kwargs):
-        registry = LogRegistry()
-        registry.create_file_log()
+        # registry = kwargs.get('registry_arg')
+        # registry = LogRegistry()
+        # registry.create_file_log()
         response, state, message = object(), 1, MSG_FINALLY_PROCESS_SUCCSSES
         try:
             response = func(*args, **kwargs)
@@ -26,37 +28,11 @@ def scripttool_decore(func):
             line = exc_tb.tb_lineno
             message = 'Error: %s, Motivo: %s, Linea: %s' % (exc_type, msg, line)
         finally:
-            registry.add_registry([message, state])
+            registry.data.append([message, state])
+            registry.create_file()
             return [response, state, message]
 
     return decorator
-
-
-class LogRegistry(object):
-    def __init__(self):
-        self.path = LOG_FILE
-        self.date = datetime.now().__str__()
-        self.structure = [{'state': 1, 'message': MSG_CREATE_LOG_FILE, 'datetime': self.date}]
-        self.df = None
-
-    def create_file_log(self):
-        if os.path.exists(self.path):
-            return
-        df = pd.DataFrame(self.structure)
-        df.to_csv(self.path, index=False)
-
-    def _get_dataframe_log(self):
-        self.df = pd.read_csv(self.path)
-
-    def add_registry(self, row):
-        row.insert(0, datetime.now().__str__())
-        self._get_dataframe_log()
-        self.df = self.df.append(pd.Series(row, index=self.df.columns[:len(row)]), ignore_index=True)
-        self.df.to_csv(self.path, index=False)
-
-    def open_registry(self):
-        if os.path.exists(self.path):
-            os.startfile(self.path)
 
 
 class ManageGeoDatabase(object):
@@ -76,8 +52,9 @@ class ManageGeoDatabase(object):
         self.analyze_delta = int(kwargs.get(ANALYZE_DELTA))  # True, False
         self.analyze_archive = int(kwargs.get(ANALYZE_ARCHIVE))  # True, False
 
-        self.registry = LogRegistry()
-        self.registry.create_file_log()
+        # self.registry = list()
+        # self.registry = LogRegistry()
+        # self.registry.create_file_log()
 
     # def start_service(self, turn=True):
     # if not self.name_service:
@@ -90,14 +67,17 @@ class ManageGeoDatabase(object):
     def preprocess(self):
         arcpy.AddMessage(MSG_ACCEPT_CONECTION_FALSE)
         arcpy.AcceptConnections(self.conn, False)
+        registry.data.append(MSG_ACCEPT_CONECTION_FALSE)
         arcpy.AddMessage(MSG_DISCONNECT_USERS)
         arcpy.DisconnectUser(self.conn_sde, 'ALL')
+        registry.data.append(MSG_DISCONNECT_USERS)
 
     def compress(self):
         arcpy.AddMessage(MSG_COMPRESS)
         arcpy.env.workspace = ""
         arcpy.ClearWorkspaceCache_management(self.conn)
         arcpy.Compress_management(self.conn)
+        registry.data.append(MSG_COMPRESS)
         print arcpy.GetMessages()
 
     def get_data_processing(self):
@@ -129,6 +109,7 @@ class ManageGeoDatabase(object):
         self.datalist = list(set(data_list))
 
         arcpy.AddMessage(MSG_DATA_LIST.format(len(self.datalist)))
+        registry.data.append(MSG_GET_DATA_PROCESSING)
 
     def rebuild_index(self):
         system = 'SYSTEM' if self.include_system else 'NO_SYSTEM'
@@ -137,6 +118,7 @@ class ManageGeoDatabase(object):
         arcpy.AddMessage(MSG_REBUILD_INDEX)
         arcpy.RebuildIndexes_management(self.conn, system, self.datalist, deltas)
         print arcpy.GetMessages()
+        registry.data.append(MSG_REBUILD_INDEX)
 
     def analyst_dataset(self):
         arcpy.AddMessage(MSG_ANALIZE_DATASET)
@@ -146,14 +128,20 @@ class ManageGeoDatabase(object):
         archive = 'ANALYZE_ARCHIVE' if self.analyze_archive else 'NO_ANALYZE_ARCHIVE '
         arcpy.AnalyzeDatasets_management(self.conn, system, '#', base, deltas, archive)
         print arcpy.GetMessages()
+        registry.data.append(MSG_ANALIZE_DATASET)
 
     def postprocess(self):
         arcpy.AddMessage(MSG_ACCEPT_CONECTION_TRUE)
         arcpy.AcceptConnections(self.conn, True)
+        registry.data.append(MSG_ACCEPT_CONECTION_TRUE)
 
     def main(self):
-        self.preprocess()
-        self.compress()
-        self.rebuild_index()
-        self.analyst_dataset()
-        self.postprocess()
+        try:
+            self.preprocess()
+            self.compress()
+            self.rebuild_index()
+            self.analyst_dataset()
+            self.postprocess()
+        except Exception as e:
+            arcpy.AcceptConnections(self.conn, True)
+            raise RuntimeError(e)

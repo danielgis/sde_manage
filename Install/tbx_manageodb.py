@@ -1,14 +1,15 @@
+# from manageodb import *
+# from packages import *
 from manageodb import *
-from packages import *
 from inspect import currentframe
 import sys
 
 
 @scripttool_decore
-def manage_geodatabase_tool():
+def manage_geodatabase_tool(registry_arg=registry):
     arcpy.AddMessage(MSG_PROCESS_INI)
     cf = currentframe()
-    registry.add_registry([MSG_PROCESS_INI, 1])
+    registry_arg.data.append([MSG_PROCESS_INI, 1])
 
     params = dict()
     params[CONN] = get_parameter(CONN)[0][0]
@@ -51,12 +52,13 @@ def manage_geodatabase_tool():
 
     poo = ManageGeoDatabase(**params)
     poo.main()
-    registry.add_registry([MSG_PROCESS_FIN, 1])
+    registry_arg.data.append([MSG_PROCESS_FIN, 1])
     arcpy.AddMessage(MSG_PROCESS_FIN)
+    return 'success'
 
 
 if __name__ == '__main__':
-    response = manage_geodatabase_tool()
+    response = manage_geodatabase_tool(registry_arg=registry)
     execute = sys.executable
     if sys.executable.endswith('ArcMap.exe'):
         import pythonaddins
