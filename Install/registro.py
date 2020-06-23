@@ -19,6 +19,9 @@ class LogRegistry(object):
         self.create_dir()
         with open(self.path, 'wb') as f:
             for i in self.data:
-                f.write(str(i) + '\t{}\n'.format(self.date))
+                f.write(str(i) + '\n')
             f.close()
         del f
+
+    def add_row(self, row):
+        self.data.append([row, datetime.today().__str__()])

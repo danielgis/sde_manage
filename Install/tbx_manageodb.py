@@ -9,7 +9,7 @@ import sys
 def manage_geodatabase_tool(registry_arg=registry):
     arcpy.AddMessage(MSG_PROCESS_INI)
     cf = currentframe()
-    registry_arg.data.append([MSG_PROCESS_INI, 1])
+    registry_arg.add_row([MSG_PROCESS_INI, 1])
 
     params = dict()
     params[CONN] = get_parameter(CONN)[0][0]
@@ -52,7 +52,7 @@ def manage_geodatabase_tool(registry_arg=registry):
 
     poo = ManageGeoDatabase(**params)
     poo.main()
-    registry_arg.data.append([MSG_PROCESS_FIN, 1])
+    registry_arg.add_row([MSG_PROCESS_FIN, 1])
     arcpy.AddMessage(MSG_PROCESS_FIN)
     return 'success'
 

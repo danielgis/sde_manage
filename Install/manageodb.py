@@ -28,7 +28,7 @@ def scripttool_decore(func):
             line = exc_tb.tb_lineno
             message = 'Error: %s, Motivo: %s, Linea: %s' % (exc_type, msg, line)
         finally:
-            registry.data.append([message, state])
+            registry.add_row([message, state])
             registry.create_file()
             return [response, state, message]
 
@@ -67,17 +67,17 @@ class ManageGeoDatabase(object):
     def preprocess(self):
         arcpy.AddMessage(MSG_ACCEPT_CONECTION_FALSE)
         arcpy.AcceptConnections(self.conn, False)
-        registry.data.append(MSG_ACCEPT_CONECTION_FALSE)
+        registry.add_row(MSG_ACCEPT_CONECTION_FALSE)
         arcpy.AddMessage(MSG_DISCONNECT_USERS)
         arcpy.DisconnectUser(self.conn_sde, 'ALL')
-        registry.data.append(MSG_DISCONNECT_USERS)
+        registry.add_row(MSG_DISCONNECT_USERS)
 
     def compress(self):
         arcpy.AddMessage(MSG_COMPRESS)
         arcpy.env.workspace = ""
         arcpy.ClearWorkspaceCache_management(self.conn)
         arcpy.Compress_management(self.conn)
-        registry.data.append(MSG_COMPRESS)
+        registry.add_row(MSG_COMPRESS)
         print arcpy.GetMessages()
 
     def get_data_processing(self):
@@ -109,7 +109,7 @@ class ManageGeoDatabase(object):
         self.datalist = list(set(data_list))
 
         arcpy.AddMessage(MSG_DATA_LIST.format(len(self.datalist)))
-        registry.data.append(MSG_GET_DATA_PROCESSING)
+        registry.add_row(MSG_GET_DATA_PROCESSING)
 
     def rebuild_index(self):
         system = 'SYSTEM' if self.include_system else 'NO_SYSTEM'
@@ -118,7 +118,7 @@ class ManageGeoDatabase(object):
         arcpy.AddMessage(MSG_REBUILD_INDEX)
         arcpy.RebuildIndexes_management(self.conn, system, self.datalist, deltas)
         print arcpy.GetMessages()
-        registry.data.append(MSG_REBUILD_INDEX)
+        registry.add_row(MSG_REBUILD_INDEX)
 
     def analyst_dataset(self):
         arcpy.AddMessage(MSG_ANALIZE_DATASET)
@@ -128,12 +128,12 @@ class ManageGeoDatabase(object):
         archive = 'ANALYZE_ARCHIVE' if self.analyze_archive else 'NO_ANALYZE_ARCHIVE '
         arcpy.AnalyzeDatasets_management(self.conn, system, '#', base, deltas, archive)
         print arcpy.GetMessages()
-        registry.data.append(MSG_ANALIZE_DATASET)
+        registry.add_row(MSG_ANALIZE_DATASET)
 
     def postprocess(self):
         arcpy.AddMessage(MSG_ACCEPT_CONECTION_TRUE)
         arcpy.AcceptConnections(self.conn, True)
-        registry.data.append(MSG_ACCEPT_CONECTION_TRUE)
+        registry.add_row(MSG_ACCEPT_CONECTION_TRUE)
 
     def main(self):
         try:
